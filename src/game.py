@@ -12,17 +12,19 @@ def main():
     pygame.display.set_caption("Tower Defense")
     screen = pygame.display.set_mode(size=SIZE)
 
-    screen.fill((170, 180, 170))
-
     map = Map(SIZE, Map.MAP_A)
-    map.load_map(screen)
+    waypoints = map.get_waypoints()
 
     enemy_image = pygame.image.load("../assets/enemy-01.png").convert_alpha()
     enemy_group = pygame.sprite.Group()
 
-    enemy = Enemy(200, enemy_image, (200, 300))
+    enemy = Enemy(
+        image=enemy_image, 
+        waypoints=waypoints, 
+        health=200, 
+        speed=1
+    )
     enemy_group.add(enemy)
-
 
     pygame.display.flip()
 
@@ -31,7 +33,8 @@ def main():
             if event.type == pygame.QUIT:
                 sys.exit()
 
-        #enemy_group.update()
+        map.draw_map(screen)
+        enemy_group.update()
         enemy_group.draw(screen)
         pygame.display.flip()
 
