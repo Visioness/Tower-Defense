@@ -13,11 +13,22 @@ def create_tower(tower_group, tower_image, pos):
     tower = Tower(
         image=tower_image,
         pos=pos,
-        damage=100,
-        firerate=0.5,
-        range = 150,
+        damage=20,
+        cooldown=2000,
+        range = 250,
     )
     tower_group.add(tower)
+
+
+def spawn_enemy(enemy_group, enemy_image, waypoints, health, speed):
+    enemy = Enemy(
+        image=enemy_image, 
+        waypoints=waypoints, 
+        health=health, 
+        speed=speed,
+    )
+    enemy_group.add(enemy)
+
 
 def main():
     # Screen Size
@@ -40,14 +51,14 @@ def main():
     tower_image = pygame.image.load("../assets/tower-02.png").convert_alpha()
     tower_group = pygame.sprite.Group()
 
-    enemy = Enemy(
-        image=enemy_image, 
-        waypoints=waypoints, 
-        health=200, 
-        speed=0.15
-    )
-    enemy_group.add(enemy)
-
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.12)
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.14)
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.16)
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.18)
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.20)
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.22)
+    spawn_enemy(enemy_group, enemy_image, waypoints, 200, 0.24)
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -67,10 +78,11 @@ def main():
         map.draw_bases(screen)
 
         # Draws and updates enemy and tower groups
-        enemy_group.update()
+        enemy_group.update(screen)
         enemy_group.draw(screen)
         
-        tower_group.update(enemy)
+        for enemy in enemy_group:
+            tower_group.update(enemy)
         tower_group.draw(screen)
 
         
