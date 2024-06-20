@@ -43,7 +43,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def rotate(self):
         distance = self.target_pos - self.pos
-        self.angle = math.degrees(math.atan2(-distance[1], distance[0])) + 90
+        self.angle = math.degrees(math.atan2(-distance[1], distance[0]))
 
         self.image = pygame.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect()
