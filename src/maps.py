@@ -40,10 +40,11 @@ class Map():
                      (9, 12), (4, 12), (4, 14), (6, 14), (6, 15), (9, 15), (9, 16),
                      (14, 16), (14, 13), (17, 13), (17, 17), (19, 17)]
 
-        self.tower_cells = [(3, 7), (7, 5), (8, 3), (13, 4), (15, 8), (5, 13)]
+        self.base_cells = [(3, 7), (7, 5), (8, 3), (13, 4), (15, 8), (5, 13)]
+        self.base_pos = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.base_cells]
 
-        self.tower_pos = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.tower_cells]
-    
+        self.placed_towers = []
+
     def draw_map(self, screen):
         for row in range(self.map_height):
             for column in range(self.map_width):
@@ -66,7 +67,7 @@ class Map():
 
     def draw_bases(self, screen):
         base_image = pygame.image.load("../assets/tower-base.png").convert_alpha()
-        bases = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.tower_cells]
+        bases = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.base_cells]
         for base in bases:
             rect = base_image.get_rect()
             rect.center = base

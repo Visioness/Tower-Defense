@@ -19,22 +19,33 @@ class Tower(pygame.sprite.Sprite):
         self.cooldown = cooldown
         self.range = range
         self.last_shot = 0
+        self.selected_enemy = None
 
-    def update(self, enemy):
+    def update(self, enemy_group):
         """
             Updates the tower angle and shoots the enemy if the enemy is in range.
         """
+        if self.selected_enemy is None or self.in_range() is False:
+            self.select_enemy(enemy_group)
+        
+        if self.selected_enemy is not None:
+            distance = self.in_range()
+            if distance is not False:
+                self.rotate(distance)
+            
+                if pygame.time.get_ticks() - self.last_shot >= self.cooldown:
+                    self.fire()
+                    self.last_shot = pygame.time.get_ticks()
+        
+    def select_enemy(self, enemy_group):
+        for each in enemy_group:
+            self.selected_enemy = each
+            if self.in_range():
+                return
+        self.selected_enemy = None
 
-        distance = self.in_range(enemy)
-        if distance is not False:
-            self.rotate(distance)
-        
-            if pygame.time.get_ticks() - self.last_shot >= self.cooldown:
-                self.fire(enemy)
-                self.last_shot = pygame.time.get_ticks()
-        
-    def in_range(self, enemy):
-        distance = (Vector2(enemy.pos) - Vector2(self.pos))
+    def in_range(self):
+        distance = (Vector2(self.selected_enemy.pos) - Vector2(self.pos))
         return distance if distance.length() <= self.range else False
 
     def rotate(self, distance):
@@ -44,12 +55,14 @@ class Tower(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
-    def fire(self, enemy):
+    def fire(self):
         print("boom")
         # TODO:
         # Animate bullet tracking
         
-        enemy.health -= self.damage
+        if self.in_range():
+            self.selected_enemy.health -= self.damage
         
-        if enemy.health <= 0:
-            enemy.kill()
+            if self.selected_enemy.health <= 0:
+                self.selected_enemy.kill()
+                self.selected_enemy = None
