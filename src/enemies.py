@@ -13,6 +13,36 @@ def draw_health_bar(surf, pos, size, borderC, backC, healthC, progress):
 
 
 class Enemy(pygame.sprite.Sprite):
+
+    levels = [
+        # Level 1
+        {
+            "weak": 3,
+            "medium": 0,
+            "strong": 0,
+        },
+        
+        # Level 2
+        {
+            "weak": 4,
+            "medium": 2,
+            "strong": 0,
+        },
+
+        # Level 3
+        {
+            "weak": 5,
+            "medium": 2,
+            "strong": 2,
+        }
+    ]
+
+    enemy_types = {
+        "weak": (100, 0.14),
+        "medium": (200, 0.18),
+        "strong": (400, 0.16),
+    }
+
     def __init__(self, image, waypoints, health, speed):
         pygame.sprite.Sprite.__init__(self)
         self.angle = 0
