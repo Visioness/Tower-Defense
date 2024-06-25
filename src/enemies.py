@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 import math
+import random
 
 
 def draw_health_bar(surf, pos, size, borderC, backC, healthC, progress):
@@ -38,12 +39,12 @@ class Enemy(pygame.sprite.Sprite):
     ]
 
     enemy_types = {
-        "weak": (100, 0.14),
-        "medium": (200, 0.18),
-        "strong": (400, 0.16),
+        "weak": (100, 0.44, 4),
+        "medium": (200, 0.48, 8),
+        "strong": (400, 0.46, 12),
     }
 
-    def __init__(self, image, waypoints, health, speed):
+    def __init__(self, image, waypoints, health, speed, reward):
         pygame.sprite.Sprite.__init__(self)
         self.angle = 0
         self.original_image = image
@@ -59,6 +60,17 @@ class Enemy(pygame.sprite.Sprite):
         self.max_health = health
         self.health = health
         self.speed = speed
+        self.reward = reward
+
+    @classmethod
+    def create_enemy_list(cls, level):
+        enemy_list = []
+        for enemy_type, enemy_count in cls.levels[level - 1].items():
+            for i in range(enemy_count):
+                enemy_list.append(enemy_type)
+        # Shuffles enemy list
+        random.shuffle(enemy_list)
+        return enemy_list
 
     def update(self, surface):
         self.draw_health(surface)

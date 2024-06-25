@@ -5,8 +5,15 @@ from maps import Map
 from buttons import Button
 from enemies import Enemy
 from towers import Tower
-import random
+from coins import Budget
 
+
+"""
++ Coin System
+- Instructions
+- Tower Types and Upgrades
++ Spawn System
+"""
 
 def create_tower(tower_image, pos):
     """
@@ -15,19 +22,21 @@ def create_tower(tower_image, pos):
     tower = Tower(
         image=tower_image,
         pos=pos,
-        damage=70,
-        cooldown=2000,
+        damage=1.4,
+        cooldown=50,
         range = 150,
+        price = 10,
     )
     return tower
 
 
-def spawn_enemy(enemy_group, enemy_image, waypoints, health, speed):
+def spawn_enemy(enemy_group, enemy_image, waypoints, health, speed, reward):
     enemy = Enemy(
         image=enemy_image, 
         waypoints=waypoints, 
         health=health, 
         speed=speed,
+        reward=reward,
     )
     enemy_group.add(enemy)
 
@@ -48,20 +57,28 @@ def main():
     map = Map(SIZE, Map.MAP_A)
     waypoints = map.get_waypoints()
 
+    # Coin Object
+    coin_image = pygame.image.load("../assets/images/coin.png").convert_alpha()
+
     # Enemy Group
     enemy_list = []
     last_enemy_spawn = pygame.time.get_ticks()
     spawn_cooldown = 2000
-
-    enemy_image = pygame.image.load("../assets/enemy-01.png").convert_alpha()
     enemy_group = pygame.sprite.Group()
+
+    # Different images for different enemy types
+    enemy_images = {
+        "weak": pygame.image.load("../assets/images/enemy-01.png").convert_alpha(),
+        "medium": pygame.image.load("../assets/images/enemy-02.png").convert_alpha(),
+        "strong": pygame.image.load("../assets/images/enemy-03.png").convert_alpha(),
+    }
     
     # Tower Group
-    tower_image = pygame.image.load("../assets/tower-02.png").convert_alpha()
+    tower_image = pygame.image.load("../assets/images/tower-02.png").convert_alpha()
     tower_group = pygame.sprite.Group()
 
     # Buttons
-    buttons_image = pygame.image.load("../assets/buttons.png").convert_alpha()
+    buttons_image = pygame.image.load("../assets/images/buttons.png").convert_alpha()
     
     button_width = buttons_image.get_width() // 3
     button_height = buttons_image.get_height()
@@ -91,17 +108,23 @@ def main():
                     # Builds the tower on the clicked base
                     if build_button.draw(screen):
                         print("Build button clicked")
-                        tower_pos = (base[0], base[1])
                         
-                        # If there's no towers on the base
-                        if tower_pos not in [each[0] for each in map.placed_towers]:
-                            tower = create_tower(tower_image, tower_pos)
-                            tower_group.add(tower)
-                            map.placed_towers.append([tower_pos, tower]) 
-                        
+                        if Budget.enough_coins(10):
+                            tower_pos = (base[0], base[1])
+                            
+                            # If there's no towers on the base
+                            if tower_pos not in [each[0] for each in map.placed_towers]:
+                                tower = create_tower(tower_image, tower_pos)
+                                tower_group.add(tower)
+                                map.placed_towers.append([tower_pos, tower])
+                                
+                                Budget.remove_coins(10)
+                            
+                            else:
+                                print("There is already a Tower!")
                         else:
-                            print("There is already a Tower!")
-                    
+                            print("Not enough coins to build the Tower!")
+
                     # Upgrade Button
                     # Upgrades the tower
                     elif upgrade_button.draw(screen):
@@ -118,6 +141,8 @@ def main():
                         if (base[0], base[1]) in tower_pos_list:
                             index = tower_pos_list.index((base[0], base[1]))
                             
+                            Budget.add_coins(10)
+
                             tower_to_kill = map.placed_towers.pop(index)[1]
                             tower_to_kill.kill()
 
@@ -152,18 +177,21 @@ def main():
         if ready_to_spawn:
             # Creates enemy list to spawn
             if not enemy_list:          
-                for enemy_type, enemy_count in Enemy.levels[level - 1].items():
-                    for i in range(enemy_count):
-                        enemy_list.append(enemy_type)
-                # Shuffles enemy list
-                random.shuffle(enemy_list)
+                enemy_list = Enemy.create_enemy_list(level)
             
             # Enemy spawn mechanism
             if pygame.time.get_ticks() - last_enemy_spawn > spawn_cooldown:
                 # If any remaining enemy to spawn
                 if enemy_list:
                     enemy = enemy_list.pop()
-                    spawn_enemy(enemy_group, enemy_image, waypoints, Enemy.enemy_types[enemy][0], Enemy.enemy_types[enemy][1])
+                    spawn_enemy(
+                        enemy_group=enemy_group,
+                        enemy_image=enemy_images[enemy],
+                        waypoints=waypoints,
+                        health=Enemy.enemy_types[enemy][0],
+                        speed=Enemy.enemy_types[enemy][1],
+                        reward=Enemy.enemy_types[enemy][2],
+                    )
                     last_enemy_spawn = pygame.time.get_ticks()
 
                 # If all enemies spawned in the list
@@ -177,7 +205,8 @@ def main():
         
         # Enemy and Tower updates
         enemy_group.update(screen)
-        tower_group.update(enemy_group)
+        tower_group.update(enemy_group, Budget)
+
         
         # Leveling up mechanism
         if len(enemy_group) == 0 and ready_to_spawn == False and not enemy_list:
@@ -196,6 +225,9 @@ def main():
             for button in buttons:
                 button.draw(screen)
 
+        # Coin Update
+        Budget.update(screen, coin_image)
+        
         # Updates the screen with the finished drawings
         pygame.display.flip()
 

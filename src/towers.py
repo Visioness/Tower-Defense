@@ -5,7 +5,7 @@ import math
 
 class Tower(pygame.sprite.Sprite):
 
-    def __init__(self, image, pos, damage, cooldown, range):
+    def __init__(self, image, pos, damage, cooldown, range, price):
         pygame.sprite.Sprite.__init__(self)
         self.angle = 0
         self.original_image = image
@@ -18,10 +18,12 @@ class Tower(pygame.sprite.Sprite):
         self.damage = damage
         self.cooldown = cooldown
         self.range = range
+        self.price = price
+
         self.last_shot = 0
         self.selected_enemy = None
 
-    def update(self, enemy_group):
+    def update(self, enemy_group, budget):
         """
             Updates the tower angle and shoots the enemy if the enemy is in range.
         """
@@ -34,7 +36,7 @@ class Tower(pygame.sprite.Sprite):
                 self.rotate(distance)
             
                 if pygame.time.get_ticks() - self.last_shot >= self.cooldown:
-                    self.fire()
+                    self.fire(budget)
                     self.last_shot = pygame.time.get_ticks()
         
     def select_enemy(self, enemy_group):
@@ -55,7 +57,7 @@ class Tower(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
-    def fire(self):
+    def fire(self, budget):
         print("boom")
         # TODO:
         # Animate bullet tracking
@@ -64,5 +66,8 @@ class Tower(pygame.sprite.Sprite):
             self.selected_enemy.health -= self.damage
         
             if self.selected_enemy.health <= 0:
+                budget.add_coins(self.selected_enemy.reward)
+                
                 self.selected_enemy.kill()
                 self.selected_enemy = None
+                

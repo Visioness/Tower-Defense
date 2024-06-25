@@ -66,7 +66,7 @@ class Map():
                 )
 
     def draw_bases(self, screen):
-        base_image = pygame.image.load("../assets/tower-base.png").convert_alpha()
+        base_image = pygame.image.load("../assets/images/tower-base.png").convert_alpha()
         bases = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.base_cells]
         for base in bases:
             rect = base_image.get_rect()
