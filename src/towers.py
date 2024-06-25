@@ -58,7 +58,6 @@ class Tower(pygame.sprite.Sprite):
         self.rect.center = self.pos
 
     def fire(self, budget):
-        print("boom")
         # TODO:
         # Animate bullet tracking
         

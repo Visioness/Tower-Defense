@@ -108,7 +108,7 @@ def main():
                     # Builds the tower on the clicked base
                     if build_button.draw(screen):
                         print("Build button clicked")
-                        
+
                         if Budget.enough_coins(10):
                             tower_pos = (base[0], base[1])
                             
@@ -123,6 +123,7 @@ def main():
                             else:
                                 print("There is already a Tower!")
                         else:
+                            print(Budget.coins)
                             print("Not enough coins to build the Tower!")
 
                     # Upgrade Button
