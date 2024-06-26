@@ -31,6 +31,10 @@ def create_tower(tower_image, pos):
 
 
 def spawn_enemy(enemy_group, enemy_image, waypoints, health, speed, reward):
+    """
+    Spawns enemy with the given parameters.
+    Then adds to the enemy sprite group.
+    """
     enemy = Enemy(
         image=enemy_image, 
         waypoints=waypoints, 
@@ -103,6 +107,8 @@ def main():
                 if base_selected:
                     # Buttons for the selected base
                     button_image_pos = (selected_base_pos[0], selected_base_pos[1])
+                    tower_pos = (base[0], base[1])
+                    tower_pos_list = [each[0] for each in map.placed_towers]
                     
                     # Build Button
                     # Builds the tower on the clicked base
@@ -110,10 +116,9 @@ def main():
                         print("Build button clicked")
 
                         if Budget.enough_coins(10):
-                            tower_pos = (base[0], base[1])
-                            
-                            # If there's no towers on the base
-                            if tower_pos not in [each[0] for each in map.placed_towers]:
+
+                            # If there's no tower on the base
+                            if tower_pos not in tower_pos_list:
                                 tower = create_tower(tower_image, tower_pos)
                                 tower_group.add(tower)
                                 map.placed_towers.append([tower_pos, tower])
@@ -130,17 +135,29 @@ def main():
                     # Upgrades the tower
                     elif upgrade_button.draw(screen):
                         print("Upgrade button clicked")
-                        # Handle upgrade action here
-                    
+
+                        if tower_pos in tower_pos_list:
+                            index = tower_pos_list.index(tower_pos)
+                            tower = map.placed_towers[index][1]
+                            
+                            if Budget.enough_coins(tower.price * 2):
+                                if tower.level <= 3:
+                                    Budget.remove_coins(tower.price * 2)
+                                    tower.upgrade_tower(tower.level + 1)
+                                    print("Succesfully upgraded the Tower!")
+                                else:
+                                    print("This Tower already upgraded to the max level!")
+                            else:
+                                print("Not enough coins to upgrade the Tower!")
+
                     # Sell Button
                     # Sells the tower on the clicked base
                     elif sell_button.draw(screen):
                         print("Sell button clicked")
-                        tower_pos_list = [each[0] for each in map.placed_towers]
 
                         # If there's a tower on the base
-                        if (base[0], base[1]) in tower_pos_list:
-                            index = tower_pos_list.index((base[0], base[1]))
+                        if tower_pos in tower_pos_list:
+                            index = tower_pos_list.index(tower_pos)
                             
                             Budget.add_coins(10)
 
@@ -156,7 +173,7 @@ def main():
                     # Creates Button objects for the clicked base
                     for base in map.base_pos:
                         distance = (Vector2(base) - Vector2(mouse_pos)).length()
-                        if distance < 17:
+                        if distance < 22:
                             base_selected = True
                             selected_base_pos = base
                             button_image_pos = (base[0] - 56, base[1] + 30)
@@ -223,6 +240,14 @@ def main():
 
         # If any base selected draws buttons
         if base_selected:
+            tower_pos = (base[0], base[1])
+            tower_pos_list = [each[0] for each in map.placed_towers]
+
+            if tower_pos in tower_pos_list:
+                index = tower_pos_list.index((base[0], base[1]))
+                tower = map.placed_towers[index][1]
+                tower.show_range(screen)
+
             for button in buttons:
                 button.draw(screen)
 

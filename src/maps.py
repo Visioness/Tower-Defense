@@ -46,6 +46,10 @@ class Map():
         self.placed_towers = []
 
     def draw_map(self, screen):
+        """
+        Draws map on the screen.
+        """
+
         for row in range(self.map_height):
             for column in range(self.map_width):
                 if self.game_map[row][column] is Map.X:
@@ -66,6 +70,10 @@ class Map():
                 )
 
     def draw_bases(self, screen):
+        """
+        Draws tower bases on the screen.
+        """
+
         base_image = pygame.image.load("../assets/images/tower-base.png").convert_alpha()
         bases = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.base_cells]
         for base in bases:
@@ -74,6 +82,10 @@ class Map():
             screen.blit(base_image, rect)
 
     def get_waypoints(self):
+        """
+        Gets the waypoints for the given enemy path.
+        """
+        
         waypoints = [[(cell[1] + 0.5) * self.cell_size , (cell[0] + 0.5) * self.cell_size] for cell in self.path]
         waypoints[0][1] = waypoints[0][1] - 100
         return waypoints

@@ -5,6 +5,9 @@ import random
 
 
 def draw_health_bar(surf, pos, size, borderC, backC, healthC, progress):
+    """
+    Draws health bar with the given parameters.
+    """
     pygame.draw.rect(surf, backC, (*pos, *size))
     pygame.draw.rect(surf, borderC, (*pos, *size), 1)
     innerPos = (pos[0] + 1, pos[1] + 1)
@@ -14,12 +17,15 @@ def draw_health_bar(surf, pos, size, borderC, backC, healthC, progress):
 
 
 class Enemy(pygame.sprite.Sprite):
+    """
+    Enemy class to represent enemies as a pygame Sprite on the screen.
+    """
 
     levels = [
         # Level 1
         {
-            "weak": 3,
-            "medium": 0,
+            "weak": 5,
+            "medium": 1,
             "strong": 0,
         },
         
@@ -27,21 +33,21 @@ class Enemy(pygame.sprite.Sprite):
         {
             "weak": 4,
             "medium": 2,
-            "strong": 0,
+            "strong": 1,
         },
 
         # Level 3
         {
             "weak": 5,
-            "medium": 2,
-            "strong": 2,
+            "medium": 3,
+            "strong": 4,
         }
     ]
 
     enemy_types = {
-        "weak": (100, 0.44, 4),
-        "medium": (200, 0.48, 8),
-        "strong": (400, 0.46, 12),
+        "weak": (100, 0.27, 2),
+        "medium": (200, 0.35, 4),
+        "strong": (400, 0.25, 6),
     }
 
     def __init__(self, image, waypoints, health, speed, reward):
@@ -64,6 +70,10 @@ class Enemy(pygame.sprite.Sprite):
 
     @classmethod
     def create_enemy_list(cls, level):
+        """
+        Creates enemy list to spawn depending on the level.
+        """
+
         enemy_list = []
         for enemy_type, enemy_count in cls.levels[level - 1].items():
             for i in range(enemy_count):
@@ -78,6 +88,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rotate()
 
     def move(self):
+        """
+        Moves the enemy.
+        """
+
         if self.target < len(self.waypoints):
             self.target_pos = Vector2(self.waypoints[self.target])
             self.movement = self.target_pos - self.pos
@@ -95,6 +109,10 @@ class Enemy(pygame.sprite.Sprite):
             self.target += 1
 
     def rotate(self):
+        """
+        Rotates enemy image depending on the facing direction.
+        """
+
         distance = self.target_pos - self.pos
         self.angle = math.degrees(math.atan2(-distance[1], distance[0]))
 
@@ -103,6 +121,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.center = self.pos
 
     def draw_health(self, surf):
+        """
+        Draws health of the enemy above.
+        """
+
         health_rect = pygame.Rect(0, 0, self.original_image.get_width(), 7)
         health_rect.midbottom = self.rect.centerx, self.rect.top
         draw_health_bar(surf, health_rect.topleft, health_rect.size, (0, 0, 0), (255, 0, 0), (0, 255, 0), self.health / self.max_health)
