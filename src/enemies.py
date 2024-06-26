@@ -24,30 +24,51 @@ class Enemy(pygame.sprite.Sprite):
     levels = [
         # Level 1
         {
-            "weak": 5,
-            "medium": 1,
+            "weak": 6,
+            "medium": 0,
             "strong": 0,
         },
         
         # Level 2
         {
-            "weak": 4,
+            "weak": 8,
             "medium": 2,
-            "strong": 1,
+            "strong": 0,
         },
 
         # Level 3
         {
+            "weak": 6,
+            "medium": 4,
+            "strong": 0,
+        },
+
+        # Level 4
+        {
+            "weak": 7,
+            "medium": 5,
+            "strong": 2,
+        },
+
+        # Level 4
+        {
             "weak": 5,
-            "medium": 3,
-            "strong": 4,
-        }
+            "medium": 4,
+            "strong": 5,
+        },
+
+        # Level 5
+        {
+            "weak": 4,
+            "medium": 6,
+            "strong": 6,
+        },
     ]
 
     enemy_types = {
-        "weak": (100, 0.27, 2),
-        "medium": (200, 0.35, 4),
-        "strong": (400, 0.25, 6),
+        "weak": (120, 0.24, 1.5),
+        "medium": (280, 0.36, 2.5),
+        "strong": (600, 0.28, 4.5),
     }
 
     def __init__(self, image, waypoints, health, speed, reward):

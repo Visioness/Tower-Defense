@@ -5,7 +5,7 @@ class Budget():
     Budget class to handle coins earned and spent.
     """
     
-    coins = 10
+    coins = 9
     
     @classmethod
     def update(cls, screen, image):

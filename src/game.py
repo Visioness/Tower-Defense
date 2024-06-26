@@ -8,13 +8,6 @@ from towers import Tower
 from coins import Budget
 
 
-"""
-+ Coin System
-- Instructions
-- Tower Types and Upgrades
-+ Spawn System
-"""
-
 def create_tower(tower_image, pos):
     """
     Creates tower at the given position.
@@ -67,7 +60,7 @@ def main():
     # Enemy Group
     enemy_list = []
     last_enemy_spawn = pygame.time.get_ticks()
-    spawn_cooldown = 2000
+    spawn_cooldown = 1600
     enemy_group = pygame.sprite.Group()
 
     # Different images for different enemy types
@@ -78,7 +71,7 @@ def main():
     }
     
     # Tower Group
-    tower_image = pygame.image.load("../assets/images/tower-02.png").convert_alpha()
+    tower_image = pygame.image.load("../assets/images/tower-01.png").convert_alpha()
     tower_group = pygame.sprite.Group()
 
     # Buttons
@@ -117,13 +110,13 @@ def main():
 
                         if Budget.enough_coins(10):
 
-                            # If there's no tower on the base
+                            # If there's no tower on the base, places the tower
                             if tower_pos not in tower_pos_list:
                                 tower = create_tower(tower_image, tower_pos)
                                 tower_group.add(tower)
                                 map.placed_towers.append([tower_pos, tower])
                                 
-                                Budget.remove_coins(10)
+                                Budget.remove_coins(tower.price)
                             
                             else:
                                 print("There is already a Tower!")
@@ -140,9 +133,10 @@ def main():
                             index = tower_pos_list.index(tower_pos)
                             tower = map.placed_towers[index][1]
                             
-                            if Budget.enough_coins(tower.price * 2):
-                                if tower.level <= 3:
-                                    Budget.remove_coins(tower.price * 2)
+                            # If upgrade is available and affordable, upgrades the tower
+                            if Budget.enough_coins(tower.price * (tower.level + 1)):
+                                if tower.level <= 2:
+                                    Budget.remove_coins(tower.price * (tower.level + 1))
                                     tower.upgrade_tower(tower.level + 1)
                                     print("Succesfully upgraded the Tower!")
                                 else:
@@ -159,7 +153,7 @@ def main():
                         if tower_pos in tower_pos_list:
                             index = tower_pos_list.index(tower_pos)
                             
-                            Budget.add_coins(10)
+                            Budget.add_coins(tower.price * tower.level / 1.6)
 
                             tower_to_kill = map.placed_towers.pop(index)[1]
                             tower_to_kill.kill()

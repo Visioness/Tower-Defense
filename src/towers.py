@@ -70,7 +70,9 @@ class Tower(pygame.sprite.Sprite):
         self.range_image.set_alpha(30)
         self.range_rect = self.range_image.get_rect()
         self.range_rect.center = self.rect.center
-        
+
+        self.original_image = pygame.image.load(f"../assets/images/tower-0{self.level}.png").convert_alpha()
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
 
     def show_range(self, surface):
         """
